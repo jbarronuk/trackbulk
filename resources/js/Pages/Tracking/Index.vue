@@ -1,0 +1,151 @@
+
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+
+import { ref, watch, onMounted } from 'vue';
+import axios from 'axios';
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+const page = usePage();
+
+const props = defineProps({
+  statuses: Array,
+  tracking: Array,
+  flash: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+console.log(props.flash);
+const trackingData = ref([...props.tracking]);
+const newTracking = ref({ number: '' });
+let flash = ref(props.flash);
+
+const createTracking = async () => {
+  try {
+    const response = await axios.post('/tracking', newTracking.value);
+    flash = response.data.flash;
+    console.log(flash);
+    trackingData.value = response.data.tracking;
+
+    // axios.get('/api/tracking')
+    //   .then(response => {
+    //     //trackingData.value = response.data;
+    //   })
+    //   .catch(error => {
+    //     console.error("Error fetching tracking data:", error);
+    //   });
+    newTracking.value = { number: '' }; // Reset form
+  } catch (error) {
+    console.error("Error creating tracking:", error);
+  }
+};
+
+const deleteTracking = async (id) => {
+  if (confirm('Are you sure you want to delete this tracking number?')) {
+    await axios.delete(`/tracking/${id}`, {
+      onSuccess: () => {
+        trackingData.value = trackingData.value.filter(track => track.id !== id);
+      },
+    });
+  }
+};
+
+const pollTrackingUpdates = () => {
+  setInterval(() => {
+    axios.get('/api/tracking')
+      .then(response => {
+        console.log('polling');
+        console.log(trackingData.value);
+        trackingData.value = response.data;
+      })
+      .catch(error => {
+        console.error("Error fetching tracking data:", error);
+      });
+  }, 5000); // Poll every 5 seconds
+};
+
+watch(() => props.tracking, (newTracking) => {
+  trackingData.value = [...newTracking];
+});
+
+onMounted(() => {
+  pollTrackingUpdates();
+});
+
+</script>
+
+<template>
+    <Head title="Profile" />
+
+    <AuthenticatedLayout>
+
+    <div class="container mx-auto max-w-3xl p-6">
+      <!-- Success or Error Message -->
+      <div v-if="flash && flash.success" class="mb-4 rounded-lg bg-green-100 p-4 text-green-700">
+        {{ flash.success }}
+      </div>
+      <div v-if="flash && flash.error" class="mb-4 rounded-lg bg-red-100 p-4 text-red-700">
+        {{ flash.error }}
+      </div>
+
+      <h1 class="text-2xl font-bold mb-4">Tracking Numbers</h1>
+
+
+
+  <div class="mb-6">
+    <form @submit.prevent="createTracking" class="space-y-4">
+      <div>
+        <label for="number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Tracking Numbers (one per line, max 50)
+        </label>
+        <textarea 
+          v-model="newTracking.number" 
+          id="number"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          rows="5"
+        ></textarea>
+      </div>
+      <button 
+        type="submit" 
+        class="w-full rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+      >
+        Track
+      </button>
+    </form>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full border divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-100 dark:bg-gray-800">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Tracking Number</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Status</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Detail</th>
+          <th class="px-6 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        <tr v-for="track in trackingData" :key="track.id" class="bg-white dark:bg-gray-900">
+          <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200">{{ track.number }}</td>
+          <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200">{{ props.statuses[track.status] }}</td>
+          <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200">{{ track.summary_response }}</td>
+          <td class="px-6 py-4 text-right">
+            <button 
+              @click="deleteTracking(track.id)" 
+              class="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-500 dark:hover:bg-red-400"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+    </AuthenticatedLayout>
+</template>
+  
+  
