@@ -16,22 +16,25 @@ const plans = [
     monthlyPrice: 4.99,
     yearlyPrice: 49.99,
     description: 'Basic features for getting started.',
-    features: ['1000 packages tracked p/m', 'Basic Support', 'Daily queries'],
-    buttonText: 'Get Started'
+    features: ['1000 packages tracked p/m', 'Basic Support', 'Daily Queries', 'Royal Mail Only'],
+    buttonText: 'Register Now',
+    route: route('register')
   },
   {
     title: 'Pro',
     monthlyPrice: 9.99,
     yearlyPrice: 99.99,
     description: 'More features for growing businesses.',
-    features: ['3000 packages tracked p/m', 'Basic Support', 'Daily queries'],
-    buttonText: 'Get Pro'
+    features: ['3000 packages tracked p/m', 'Basic Support', 'Daily Queries', 'Royal Mail Only'],
+    buttonText: 'Register Now',
+    route: route('register')
   },
   {
     title: 'Enterprise',
     description: 'Best for large-scale projects.',
-    features: ['Unlimited packages tracked', 'Priority Support', 'Hourly queries'],
-    buttonText: 'Contact Sales'
+    features: ['Unlimited packages tracked', 'Priority Support', 'Hourly Queries', 'All Carriers'],
+    buttonText: 'Contact Sales',
+    route: route('site.contact')
   }
 ]
 
@@ -93,13 +96,16 @@ const plans = [
         <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
           <li>✅ 20 packages tracked p/m</li>
           <li>✅ Limited Support</li>
-          <li>✅ Daily queries</li>
+          <li>✅ Daily Queries</li>
+          <li>✅ Royal Mail Only</li>
         </ul>
-        <button
-          class="mt-4 w-full rounded-md bg-gray-200 px-4 py-2 text-black transition hover:bg-gray-300 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
-        >
-          Sign Up for Free
-        </button>
+        <a :href="route('register')">
+            <button
+            class="mt-4 w-full rounded-md bg-gray-200 px-4 py-2 text-black transition hover:bg-gray-300 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+            >
+            Sign Up for Free
+            </button>
+        </a>
       </div>
 
       <!-- Paid Plans -->
@@ -121,11 +127,13 @@ const plans = [
         <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
           <li v-for="(feature, i) in plan.features" :key="i">✅ {{ feature }}</li>
         </ul>
+        <a :href="plan.route">
         <button
           class="mt-4 w-full rounded-md bg-[#FF2D20] px-4 py-2 text-white transition hover:bg-[#e0261c]"
         >
           {{ plan.buttonText }}
         </button>
+        </a>
       </div>
     </div>
   </section>
