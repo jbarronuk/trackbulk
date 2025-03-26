@@ -12,11 +12,13 @@ class SubscriptionController extends Controller
             return redirect()->back()->with('error', 'Invalid subscription plan.');
         }
 
-        return $request->user()->newSubscription('default', $price_id)
+        $session = $request->user()->newSubscription('default', $price_id)
             ->checkout([
                 'success_url' => route('billing.success'),
                 'cancel_url' => route('billing.failure'),
             ]);
+            
+            return redirect()->to($session->url);
     }
 
     public function success()
