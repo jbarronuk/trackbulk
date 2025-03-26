@@ -25,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tracking', [TrackingController::class, 'store'])->name('tracking.store');
     Route::delete('/tracking/{id}', [TrackingController::class, 'destroy'])->name('tracking.destroy');
 
-    Route::get('/checkout/{price_id}', [SubscriptionController::class, 'checkout'])->name('billing.checkout');
+    Route::post('/checkout/{price_id}', [SubscriptionController::class, 'checkout'])->name('billing.checkout');
     Route::get('/billing/success', [SubscriptionController::class, 'success'])->name('billing.success');
     Route::get('/billing/failure', [SubscriptionController::class, 'failure'])->name('billing.failure');
 });

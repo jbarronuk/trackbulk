@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
             'auth.user' => fn () => $request->user()
                 ? $request->user()->only('id', 'name', 'email')
                 : null,
+            'subscription_active' => $request->user()->subscribed('default')
         ]);
     }
 }

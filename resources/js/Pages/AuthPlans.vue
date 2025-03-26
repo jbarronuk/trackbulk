@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import Header from '@/Components/Header.vue';
 import { ref } from 'vue'
 
@@ -7,6 +7,10 @@ defineProps({
     canLogin: {},
     canRegister: {},
 });
+
+const subscribe = (priceId) => {
+    router.post(route('billing.checkout', priceId ));
+};
 
 const isYearly = ref(false)
 
@@ -17,8 +21,9 @@ const plans = [
     yearlyPrice: 49.99,
     description: 'Basic features for getting started.',
     features: ['1000 packages tracked p/m', 'Basic Support', 'Daily Queries', 'Royal Mail Only'],
-    buttonText: 'Register Now',
-    route: route('register')
+    buttonText: 'Get Started',
+    monthly_price_id: 'price_1R2YyNFbgslx19wSfQxC3p2w',
+    yearly_price_id: 'price_1R2Z0sFbgslx19wSxoT0X5w0'
   },
   {
     title: 'Pro',
@@ -26,8 +31,9 @@ const plans = [
     yearlyPrice: 99.99,
     description: 'More features for growing businesses.',
     features: ['3000 packages tracked p/m', 'Basic Support', 'Daily Queries', 'Royal Mail Only'],
-    buttonText: 'Register Now',
-    route: route('register')
+    buttonText: 'Go Pro',
+    monthly_price_id: 'price_1R2Yx6Fbgslx19wSL808seTg',
+    yearly_price_id: 'price_1R2Z0BFbgslx19wSdUqMrgvc'
   },
   {
     title: 'Enterprise',
@@ -127,7 +133,7 @@ const plans = [
         <ul class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
           <li v-for="(feature, i) in plan.features" :key="i">✅ {{ feature }}</li>
         </ul>
-        <button v-if="plan.price_id" @click="subscribe(isYearly ? plan.yearly_price_id : plan.monthly_price_id)" class="mt-4 w-full rounded-md bg-[#FF2D20] px-4 py-2 text-white transition hover:bg-[#e0261c]">
+        <button v-if="plan.yearly_price_id || plan.monthly_price_id" @click="subscribe(isYearly ? plan.yearly_price_id : plan.monthly_price_id)" class="mt-4 w-full rounded-md bg-[#FF2D20] px-4 py-2 text-white transition hover:bg-[#e0261c]">
             {{ plan.buttonText }}
         </button>
         <a v-if="plan.route" :href="plan.route">

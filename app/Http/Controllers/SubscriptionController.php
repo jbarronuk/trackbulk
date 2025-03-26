@@ -8,6 +8,10 @@ class SubscriptionController extends Controller
 {
     public function checkout(Request $request, String $price_id)
     {
+        if (!$price_id) {
+            return redirect()->back()->with('error', 'Invalid subscription plan.');
+        }
+
         return $request->user()->newSubscription('default', $price_id)
             ->checkout([
                 'success_url' => route('billing.success'),
