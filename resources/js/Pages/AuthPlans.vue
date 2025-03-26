@@ -9,7 +9,7 @@ defineProps({
 });
 
 const subscribe = (priceId) => {
-    router.post(route('billing.checkout', priceId ));
+    window.location.href = route('billing.checkout', priceId);
 };
 
 const isYearly = ref(false)
