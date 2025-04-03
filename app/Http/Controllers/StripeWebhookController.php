@@ -146,19 +146,16 @@ class StripeWebhookController extends CashierController
     }
     protected function handleInvoicePaymentSucceeded(array $payload)
     {
-        Log::info($payload);
-        $stripeInvoice = $payload['data']['object'];
-
         // Find the user by Stripe customer ID
-        $user = \App\Models\User::where('stripe_id', $stripeInvoice['customer'])->first();
+        $user = \App\Models\User::where('stripe_id', $payload['customer'])->first();
 
         if (!$user) {
-            Log::warning("User not found for Stripe customer: " . $stripeInvoice['customer']);
+            Log::warning("User not found for Stripe customer: " . $payload['customer']);
             return response()->json(['status' => 'user_not_found'], 404);
         }
 
         // Update subscription status
-        $subscription = $user->subscriptions()->where('stripe_id', $stripeInvoice['subscription'])->first();
+        $subscription = $user->subscriptions()->where('stripe_id', $payload['subscription'])->first();
 
         if ($subscription) {
             $subscription->update([
@@ -166,7 +163,7 @@ class StripeWebhookController extends CashierController
             ]);
             Log::info("Subscription updated to active for user ID: " . $user->id);
         } else {
-            Log::warning("Subscription not found for invoice: " . $stripeInvoice['id']);
+            Log::warning("Subscription not found for invoice: " . $payload['id']);
         }
 
         return response()->json(['status' => 'success']);
