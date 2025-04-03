@@ -23,16 +23,20 @@ class StripeWebhookController extends CashierController
 
         switch ($payload['type']) {
             case 'customer.subscription.created':
+                $this->handleSubscriptionCreated($payload['data']['object']);
+                break;
             case 'customer.subscription.updated':
                 $this->handleSubscriptionUpdated($payload['data']['object']);
                 break;
-
             case 'customer.subscription.deleted':
                 $this->handleSubscriptionDeleted($payload['data']['object']);
                 break;
 
             case 'invoice.payment_failed':
                 $this->handlePaymentFailed($payload['data']['object']);
+                break;
+            case 'invoice.payment_succeeded':
+                $this->handleInvoicePaymentSucceeded($payload['data']['object']);
                 break;
 
             default:
@@ -42,9 +46,42 @@ class StripeWebhookController extends CashierController
 
         return response()->json(['status' => 'success']);
     }
+    /**
+     * Handle subscription create.
+     */
+    protected function handleSubscriptionCreated($subscription)
+    {
+        $user = User::where('stripe_id', $subscription['customer'])->first();
+
+        if ($user) {
+            $newProductId = $subscription['items']['data'][0]['price']['product'];
+            $product = Product::where('stripe', $newProductId)->first();
+
+            if ($product) {
+                // Create a new subscription in your system
+                $user->subscriptions()->create([
+                    'name' => 'default',
+                    'stripe_id' => $subscription['id'],
+                    'stripe_status' => $subscription['status'],
+                    'stripe_price' => $subscription['items']['data'][0]['price']['id'],
+                    'quantity' => 1,
+                ]);
+
+                // Update user plan
+                $user->update([
+                    'plan' => $newProductId,
+                    'packages_remaining' => $product->quota,
+                ]);
+
+                Log::info("New subscription created for User {$user->id} with plan {$newProductId} and quota {$product->quota}");
+            } else {
+                Log::warning("No matching product found for Stripe product ID: {$newProductId}");
+            }
+        }
+    }
 
     /**
-     * Handle subscription creation and updates.
+     * Handle subscription update.
      */
     protected function handleSubscriptionUpdated($subscription)
     {
@@ -106,5 +143,31 @@ class StripeWebhookController extends CashierController
 
             Log::warning("Payment failed for user {$user->id}");
         }
+    }
+    protected function handleInvoicePaymentSucceeded(array $payload)
+    {
+        $stripeInvoice = $payload['data']['object'];
+
+        // Find the user by Stripe customer ID
+        $user = \App\Models\User::where('stripe_id', $stripeInvoice['customer'])->first();
+
+        if (!$user) {
+            Log::warning("User not found for Stripe customer: " . $stripeInvoice['customer']);
+            return response()->json(['status' => 'user_not_found'], 404);
+        }
+
+        // Update subscription status
+        $subscription = $user->subscriptions()->where('stripe_id', $stripeInvoice['subscription'])->first();
+
+        if ($subscription) {
+            $subscription->update([
+                'stripe_status' => 'active',
+            ]);
+            Log::info("Subscription updated to active for user ID: " . $user->id);
+        } else {
+            Log::warning("Subscription not found for invoice: " . $stripeInvoice['id']);
+        }
+
+        return response()->json(['status' => 'success']);
     }
 }

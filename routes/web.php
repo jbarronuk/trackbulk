@@ -11,7 +11,7 @@ use App\Http\Controllers\StripeWebhookController;
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 Route::get('/plans', [SiteController::class, 'plans'])->name('site.plans');
 Route::get('/contact', [SiteController::class, 'contact'])->name('site.contact');
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
