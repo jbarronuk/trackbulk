@@ -19,7 +19,7 @@ class StripeWebhookController extends CashierController
     {
         $payload = $request->all();
 
-        Log::info('Stripe webhook received', $payload);
+        //Log::info('Stripe webhook received', $payload);
 
         switch ($payload['type']) {
             case 'customer.subscription.created':
@@ -69,7 +69,7 @@ class StripeWebhookController extends CashierController
 
                 // Update user plan
                 $user->update([
-                    'plan' => $newProductId,
+                    'product_id' => $product->id,
                     'packages_remaining' => $product->quota,
                 ]);
 
@@ -146,6 +146,7 @@ class StripeWebhookController extends CashierController
     }
     protected function handleInvoicePaymentSucceeded(array $payload)
     {
+        Log::info($payload);
         $stripeInvoice = $payload['data']['object'];
 
         // Find the user by Stripe customer ID
