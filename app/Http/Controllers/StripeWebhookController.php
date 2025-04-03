@@ -54,6 +54,7 @@ class StripeWebhookController extends CashierController
         $user = User::where('stripe_id', $subscription['customer'])->first();
 
         if ($user) {
+            Log::info($subscription);
             $newProductId = $subscription['items']['data'][0]['price']['product'];
             $product = Product::where('stripe', $newProductId)->first();
 
