@@ -27,7 +27,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'account_id',
         'client_id',
         'client_secret',
-        'packages_remaining'
+        'packages_remaining',
+        'product_id'
     ];
 
     /**
