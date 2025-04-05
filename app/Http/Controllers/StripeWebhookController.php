@@ -89,6 +89,7 @@ class StripeWebhookController extends CashierController
 
         if ($user) {
             $newProductId = $subscription['items']['data'][0]['price']['product'];
+            $newPriceId = $subscription['items']['data'][0]['price']['id'];
 
             $product = Product::where('stripe', $newProductId)->first();
 
@@ -102,9 +103,9 @@ class StripeWebhookController extends CashierController
                 ]);
 
                 // Sync with Cashier
-                $user->subscription('default')->swap($newProductId);
+                $user->subscription('default')->swap($newPriceId);
 
-                Log::info("User {$user->id} updated their subscription to plan {$newProductId} with quota {$product->quota}");
+                Log::info("User {$user->id} updated their subscription to plan {$newProductId} with quota {$product->quota} on pricing {$newPriceId}");
             } else {
                 Log::warning("No matching product found for Stripe product ID: {$newProductId}");
             }
