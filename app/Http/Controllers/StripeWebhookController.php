@@ -102,8 +102,10 @@ class StripeWebhookController extends CashierController
                     'stripe_status' => $subscription['status'],
                 ]);
 
-                // Sync with Cashier
-                //$user->subscription('default')->swap($newPriceId);
+                $subscription = $user->subscriptions->where('type', 'default')->first();
+                $subscription->update([
+                    'stripe_price' => $newPriceId
+                ]);
 
                 Log::info("User {$user->id} updated their subscription to plan {$newProductId} with quota {$product->quota} on pricing {$newPriceId}");
             } else {
