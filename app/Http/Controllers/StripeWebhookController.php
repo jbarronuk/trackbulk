@@ -96,7 +96,7 @@ class StripeWebhookController extends CashierController
             //TODO add they've used all their credits, then they'll receive more credits
             if ($product) {
                 $user->update([
-                    'product_id' => 123,
+                    'product_id' => 2,
                     'packages_remaining' => ($user->packages_remaining > $product->quota) ? $user->packages_remaining : $product->quota,
                     'stripe_status' => $subscription['status'],
                 ]);
