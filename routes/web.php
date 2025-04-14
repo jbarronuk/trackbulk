@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExportsController;
 use App\Http\Controllers\ProfileController;
 
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ Route::middleware('auth')->group(function () {
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
+    Route::get('/tracking/export', [ExportsController::class, 'tracking'])->name('export.tracking');
     Route::get('/api/tracking', [TrackingController::class, 'all'])->name('tracking.all');
 
     Route::post('/tracking', [TrackingController::class, 'store'])->name('tracking.store');

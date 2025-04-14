@@ -18,6 +18,10 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
+
+        $this->app->bind('files', function () {
+            return new \Illuminate\Filesystem\Filesystem;
+        });
     }
 
     /**
@@ -28,4 +32,5 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
         Cashier::useCustomerModel(User::class);
     }
+    
 }
