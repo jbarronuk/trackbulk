@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\TrackingStatus;
 use App\Models\Tracking;
+use App\Models\TrackingHistory;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,6 +42,12 @@ class Query implements ShouldQueue
             'X-IBM-Client-Secret' => $this->track->account->users[0]->client_secret,
         ])->get("https://api.royalmail.net/mailpieces/v2/summary", [
             'mailPieceId' => $mailPieceId
+        ]);
+
+        TrackingHistory::create([
+            'number'        => $mailPieceId,
+            'response'      => $response,
+            'tracking_id'   => $this->track->id
         ]);
 
         if ($response->successful()) {
