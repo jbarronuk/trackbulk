@@ -5,22 +5,28 @@ namespace App\Services\Exports;
 use App\Enums\TrackingStatus;
 use App\Models\Tracking;
 use App\Models\User;
+use Brick\Math\BigInteger;
+use Carbon\Carbon;
 use Illuminate\Container\Attributes\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class TrackingExport implements FromCollection, WithHeadings
+class TrackingSelectionExport implements FromCollection, WithHeadings
 {
     private $user;
+    private $selection;
 
-    public function __construct(User $user)
+    public function __construct(User $user, Array $selection)
     {
         $this->user = $user;
+        $this->selection = $selection;
     }
 
     public function collection()
     {
-        return Tracking::where('account_id', $this->user->account_id)->where('status', '>', TrackingStatus::Querying->value)->get(['number', 'summary_response']);
+        return Tracking::where('account_id', $this->user->account_id)
+            ->whereIn('id',  $this->selection)
+            ->get(['number', 'summary_response']);
     }
     public function headings(): array
     {

@@ -35,7 +35,13 @@ const showingNavigationDropdown = ref(false);
                                     :href="route('tracking.index')"
                                     :active="route().current('tracking.index')"
                                 >
-                                    Dashboard
+                                    Track
+                                </NavLink>
+                                <NavLink
+                                    :href="route('tracking.history')"
+                                    :active="route().current('tracking.history')"
+                                >
+                                    History
                                 </NavLink>
                             </div>
                         </div>
@@ -153,6 +159,12 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('tracking.index')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('tracking.history')"
+                            :active="route().current('tracking.history')"
+                        >
+                            History
                         </ResponsiveNavLink>
                     </div>
 

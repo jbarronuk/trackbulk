@@ -6,7 +6,7 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tracking extends Model
+class TrackingBatch extends Model
 {
     use HasFactory;
 
@@ -15,7 +15,7 @@ class Tracking extends Model
      *
      * @var string
      */
-    protected $table = 'tracking';
+    protected $table = 'tracking_batch';
 
     /**
      * The attributes that are mass assignable.
@@ -23,24 +23,18 @@ class Tracking extends Model
      * @var array
      */
     protected $fillable = [
-        'number',
-        'type',
-        'status',
-        'response',
-        'summary_response',
-        'account_id',
-        'tracking_batch_id'
+        'account_id'
     ];
 
     /**
      * Get the account associated with this tracking.
      */
+    public function tracking()
+    {
+        return $this->hasMany(Tracking::class);
+    }
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');
-    }
-    public function trackingBatch()
-    {
-        return $this->belongsTo(TrackingBatch::class, 'tracking_batch_id', 'id');
     }
 }

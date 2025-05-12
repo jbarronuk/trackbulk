@@ -39,4 +39,8 @@ class Account extends Model
     {
         return $this->hasMany(Tracking::class, 'account_id', 'id');
     }
+    public function trackingBatches()
+    {
+        return $this->hasMany(TrackingBatch::class, 'account_id', 'id');
+    }
 }

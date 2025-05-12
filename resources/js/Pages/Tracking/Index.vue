@@ -2,7 +2,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -11,14 +11,16 @@ const page = usePage();
 
 const props = defineProps({
   statuses: Array,
-  tracking: Array,
+  batches: Array,
   flash: {
     type: Object,
     default: () => ({}),
   },
 });
-console.log(props.flash);
-const trackingData = ref([...props.tracking]);
+
+const trackingData = ref([...props.batches]);
+const loading = ref([]);
+
 const newTracking = ref({ number: '' });
 let flash = ref(props.flash);
 
@@ -43,22 +45,27 @@ const createTracking = async () => {
 };
 
 const deleteTracking = async (id) => {
+  loading.value.push(id);
   if (confirm('Are you sure you want to delete this tracking number?')) {
     await axios.delete(`/tracking/${id}`, {
       onSuccess: () => {
-        trackingData.value = trackingData.value.filter(track => track.id !== id);
+        trackingData.value = trackingData.value.map(batch => {
+          return {
+            ...batch,
+            tracking: batch.tracking.filter(track => track.id !== id)
+          };
+        });
       },
     });
   }
 };
-
+let intervalId;
 const pollTrackingUpdates = () => {
-  setInterval(() => {
-    axios.get('/api/tracking')
+  intervalId = setInterval(() => {
+    axios.get('/api/tracking?format=time&start=' + new Date(new Date().setHours(0, 0, 0, 0)).toISOString() + '&end=' + new Date(new Date().setHours(23, 59, 59, 999)).toISOString())
       .then(response => {
-        console.log('polling');
-        console.log(trackingData.value);
         trackingData.value = response.data;
+        loading.value = [];
       })
       .catch(error => {
         console.error("Error fetching tracking data:", error);
@@ -72,6 +79,10 @@ watch(() => props.tracking, (newTracking) => {
 
 onMounted(() => {
   pollTrackingUpdates();
+});
+
+onUnmounted(() => {
+  clearInterval(intervalId)
 });
 
 </script>
@@ -124,26 +135,45 @@ onMounted(() => {
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Detail</th>
           <th class="px-6 py-3 text-right">
-            <a :href="route('export.tracking')" class="btn">
-              <svg class="w-6 h-6 text-gray-300 hover:text-green-500 fill-current inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM155.7 250.2L192 302.1l36.3-51.9c7.6-10.9 22.6-13.5 33.4-5.9s13.5 22.6 5.9 33.4L221.3 344l46.4 66.2c7.6 10.9 5 25.8-5.9 33.4s-25.8 5-33.4-5.9L192 385.8l-36.3 51.9c-7.6 10.9-22.6 13.5-33.4 5.9s-13.5-22.6-5.9-33.4L162.7 344l-46.4-66.2c-7.6-10.9-5-25.8 5.9-33.4s25.8-5 33.4 5.9z"/></svg>
+            <a :href="route('export.tracking', {
+              type: 'daterange',
+              start: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+              end: new Date(new Date().setHours(23, 59, 59, 999)).toISOString()
+              })" class="btn">
+                <svg class="w-6 h-6 text-gray-300 hover:text-green-500 fill-current inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM155.7 250.2L192 302.1l36.3-51.9c7.6-10.9 22.6-13.5 33.4-5.9s13.5 22.6 5.9 33.4L221.3 344l46.4 66.2c7.6 10.9 5 25.8-5.9 33.4s-25.8 5-33.4-5.9L192 385.8l-36.3 51.9c-7.6 10.9-22.6 13.5-33.4 5.9s-13.5-22.6-5.9-33.4L162.7 344l-46.4-66.2c-7.6-10.9-5-25.8 5.9-33.4s25.8-5 33.4 5.9z"/></svg>
             </a>
           </th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-        <tr v-for="track in trackingData" :key="track.id" class="bg-white dark:bg-gray-900">
-          <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200">{{ track.number }}</td>
-          <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200">{{ props.statuses[track.status] }}</td>
-          <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200">{{ track.summary_response }}</td>
-          <td class="px-6 py-4 text-right">
-            <button 
-              @click="deleteTracking(track.id)" 
-              class="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-500 dark:hover:bg-red-400"
-            >
-              Delete
-            </button>
-          </td>
+        <tr v-if="trackingData.length == 0">
+            <td class="px-3 text-center text-sm text-gray-600 dark:text-gray-300" colspan="4">Nothing tracked today, yet...</td>
         </tr>
+        <template v-for="(batch, batchIndex) in trackingData" :key="batch.id">
+          <tr>
+            <td class="px-3 text-sm text-gray-600 dark:text-gray-300" colspan="4">Batch: {{ batch.formatted_created_at }}</td>
+          </tr>
+          <tr v-for="(track, trackingIndex) in batch.tracking" :key="track.id">
+            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-900">{{ track.number }}</td>
+            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-900">{{ props.statuses[track.status] }}</td>
+            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-900">{{ track.summary_response }}</td>
+            <td class="px-6 py-4 text-right bg-white dark:bg-gray-900">
+              <button 
+                @click="deleteTracking(track.id)" 
+                v-if="!loading.includes(track.id)"
+                class="w-36 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-500 dark:hover:bg-red-400"
+              >
+                Delete
+              </button>
+              <button
+                v-if="loading.includes(track.id)"
+                class="w-36 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-500 dark:hover:bg-red-400"
+              >
+                <FontAwesomeIcon icon="fa-solid fa-spinner" spin />
+              </button>
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </div>

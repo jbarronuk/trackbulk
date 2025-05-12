@@ -21,10 +21,12 @@ Route::middleware('auth')->group(function () {
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
+    Route::get('/history', [TrackingController::class, 'history'])->name('tracking.history');
     Route::get('/tracking/export', [ExportsController::class, 'tracking'])->name('export.tracking');
     Route::get('/api/tracking', [TrackingController::class, 'all'])->name('tracking.all');
 
     Route::post('/tracking', [TrackingController::class, 'store'])->name('tracking.store');
+    Route::delete('/tracking/bulkdelete', [TrackingController::class, 'bulkdestroy'])->name('tracking.destroy.bulk');
     Route::delete('/tracking/{id}', [TrackingController::class, 'destroy'])->name('tracking.destroy');
 
     Route::get('/checkout/{price_id}', [SubscriptionController::class, 'checkout'])->name('billing.checkout');
