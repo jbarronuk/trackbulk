@@ -121,22 +121,24 @@ const changed = () => {
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Detail</th>
           <th class="pr-2 text-right">
-            <div class="btn float-right">
-              <font-awesome-icon v-if="!loading" @click="deleteSelected" class="hover: cursor-pointer w-6 h-6 text-gray-300 hover:text-red-500 fill-current inline-block" :icon="['fas', 'trash-can']" />
-              <FontAwesomeIcon v-if="loading" class="w-6 h-6 text-gray-300 fill-current inline-block" icon="fa-solid fa-spinner" spin />
-            </div>
-
-            <a :href="route('export.tracking', {
-              type: 'selection',
-              start: new Date(0).toISOString(),
-              end: new Date(new Date().setHours(23, 59, 59, 999)).toISOString(),
-              selection: selected
-              })" class="btn float-right">
-                <font-awesome-icon class="w-6 h-6 text-gray-300 hover:text-green-500 fill-current inline-block" :icon="['fas', 'file-excel']" />
-            </a>
-            <div class="btn float-right">
-              <font-awesome-icon v-if="allSelected !== 1" @click="selectAll" class="hover:cursor-pointer w-6 h-6 text-gray-300 hover:text-blue-500 fill-current inline-block" :icon="['fas', 'square-check']" />
-              <font-awesome-icon v-if="allSelected === 1" @click="deSelectAll" class="hover:cursor-pointer w-6 h-6 text-gray-300 hover:text-blue-500 fill-current inline-block" :icon="['far', 'rectangle-xmark']" />
+            <div class="flex justify-end gap-2">
+              <div class="btn">
+                <font-awesome-icon v-if="allSelected !== 1" @click="selectAll" class="hover:cursor-pointer w-6 h-6 text-gray-300 hover:text-blue-500 fill-current inline-block" :icon="['fas', 'square-check']" />
+                <font-awesome-icon v-if="allSelected === 1" @click="deSelectAll" class="hover:cursor-pointer w-6 h-6 text-gray-300 hover:text-blue-500 fill-current inline-block" :icon="['far', 'rectangle-xmark']" />
+              </div>
+              <a :href="route('export.tracking', {
+                type: 'selection',
+                start: new Date(0).toISOString(),
+                end: new Date(new Date().setHours(23, 59, 59, 999)).toISOString(),
+                selection: selected
+                })" class="btn">
+                  <font-awesome-icon class="w-6 h-6 text-gray-300 hover:text-green-500 fill-current inline-block" :icon="['fas', 'file-excel']" />
+              </a>
+              
+              <div class="btn">
+                <font-awesome-icon v-if="!loading" @click="deleteSelected" class="hover: cursor-pointer w-6 h-6 text-gray-300 hover:text-red-500 fill-current inline-block" :icon="['fas', 'trash-can']" />
+                <FontAwesomeIcon v-if="loading" class="w-6 h-6 text-gray-300 fill-current inline-block" icon="fa-solid fa-spinner" spin />
+              </div>
             </div>
           </th>
         </tr>
