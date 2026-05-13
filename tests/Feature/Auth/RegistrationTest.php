@@ -23,9 +23,11 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'client_id' => 'ROYAL_MAIL_CLIENT_ID',
+            'client_secret' => 'ROYAL_MAIL_SECRET',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('tracking.index', absolute: false));
     }
 }

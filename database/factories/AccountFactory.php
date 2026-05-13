@@ -23,8 +23,7 @@ class AccountFactory extends Factory
     public function definition()
     {
         return [
-            'type' => AccountType::Free->value;
-            
+            'type' => AccountType::Free->value
         ];
     }
 }
