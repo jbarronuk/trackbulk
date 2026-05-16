@@ -2,10 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Bus\Batchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $account_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $formatted_created_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch whereUpdatedAt($value)
+ * @mixin \Illuminate\Database\Eloquent\Model
+ */
 class TrackingBatch extends Model
 {
     use HasFactory;
@@ -17,22 +33,26 @@ class TrackingBatch extends Model
      */
     protected $table = 'tracking_batch';
 
-    /**
+/**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'account_id'
     ];
 
     /**
-     * Get the account associated with this tracking.
-     */
+    * @return HasMany<Tracking, $this>
+    */
     public function tracking()
     {
         return $this->hasMany(Tracking::class);
     }
+
+    /**
+    * @return BelongsTo<Account, $this>
+    */
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');

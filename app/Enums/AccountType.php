@@ -13,8 +13,8 @@ enum AccountType: int
 
     public static function map(int $value): string
     {
-        return match ($value) {
-            self::Free->value => 'Free',
+        return match (self::from($value)) {
+            self::Free => 'Free',
         };
     }
 }

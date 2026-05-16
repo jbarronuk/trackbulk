@@ -15,16 +15,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 class TrackingController extends Controller
 {
     /**
      * Display a listing of the tracking numbers for the authenticated user's account.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): \Inertia\Response
     {
         $user = Auth::user();
 
@@ -90,11 +89,8 @@ class TrackingController extends Controller
 
     /**
      * Store a newly created tracking number in the user's account.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
             'number' => 'required|string',
@@ -194,11 +190,8 @@ class TrackingController extends Controller
 
     /**
      * Remove the specified tracking number from the user's account.
-     *
-     * @param  \App\Models\Tracking  $tracking
-     * @return \Illuminate\Http\Response
      */
-    public function destroy($id, $redirect = true)
+    public function destroy(int $id, $redirect = true): ?\Illuminate\Http\RedirectResponse
     {
         $tracking = Tracking::find($id);
         
@@ -218,6 +211,7 @@ class TrackingController extends Controller
         if ($redirect) {
             return redirect()->route('tracking.index')->with('success', 'Tracking number deleted successfully.');
         }
+        return null;
     }
     public function bulkdestroy(Request $request)
     {

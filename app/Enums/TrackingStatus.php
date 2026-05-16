@@ -18,13 +18,13 @@ enum TrackingStatus: int
 
     public static function map(int $value): string
     {
-        return match ($value) {
-            self::Unknown->value => 'Unknown',
-            self::Created->value => 'Created',
-            self::Queued->value => 'Queued',
-            self::Querying->value => 'Querying',
-            self::RoyalMailReadyForDelivery->value => 'Ready for Delivery',
-            self::RoyalMailDelivered->value => 'Delivered',
+        return match (self::from($value)) {
+            self::Unknown => 'Unknown',
+            self::Created => 'Created',
+            self::Queued => 'Queued',
+            self::Querying => 'Querying',
+            self::RoyalMailReadyForDelivery => 'Ready for Delivery',
+            self::RoyalMailDelivered => 'Delivered',
         };
     }
     public static function all()

@@ -13,8 +13,8 @@ enum TrackingType: int
 
     public static function map(int $value): string
     {
-        return match ($value) {
-            self::RoyalMail->value => 'RoyalMail',
+        return match (self::from($value)) {
+            self::RoyalMail => 'RoyalMail',
         };
     }
 }

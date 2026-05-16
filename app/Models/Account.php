@@ -4,7 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read int|null $tracking_count
+ * @property-read int|null $tracking_batches_count
+ * @property-read int|null $users_count
+ * @method static \Database\Factories\AccountFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereUpdatedAt($value)
+ * @mixin \Illuminate\Database\Eloquent\Model
+ */
 class Account extends Model
 {
     use HasFactory;
@@ -19,28 +38,34 @@ class Account extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'type',
     ];
 
     /**
-     * Get the users associated with this account.
+     * @return HasMany<User, $this>
      */
     public function users()
     {
         return $this->hasMany(User::class, 'account_id', 'id');
     }
-        /**
-     * Get the users associated with this account.
+
+    /**
+     * @return HasMany<Tracking, $this>
      */
     public function tracking()
     {
         return $this->hasMany(Tracking::class, 'account_id', 'id');
     }
+
+    /**
+     * @return HasMany<TrackingBatch, $this>
+     */
     public function trackingBatches()
     {
         return $this->hasMany(TrackingBatch::class, 'account_id', 'id');
     }
+
 }

@@ -54,7 +54,7 @@ class SiteController extends Controller
         ]);
 
         // Send email
-        Mail::raw("Name: {$request->name}\nEmail: {$request->email}\n\nMessage:\n{$request->message}", function ($message) use ($request) {
+        Mail::raw("Name: {$request->name}\nEmail: {$request->email}\n\nMessage:\n{$request->message}", function ($message) {
             $message->to('jjbarron0810@gmail.com')
                     ->subject('New Contact Form Submission');
         });

@@ -17,8 +17,9 @@ class SubscriptionController extends Controller
                 'success_url' => route('billing.success'),
                 'cancel_url' => route('billing.failure'),
             ]);
-            
-            return redirect()->to($session->url);
+
+            $url = $session->asStripeCheckoutSession()->url;
+            return redirect()->to($url);
     }
 
     public function success()
