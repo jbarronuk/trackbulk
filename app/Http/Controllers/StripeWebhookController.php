@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AccountQuota;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
-use App\Models\User;
-use App\Models\Product;
-use App\Notifications\SubscriptionChangedNotification;
 
 class StripeWebhookController extends CashierController
 {
@@ -19,7 +18,7 @@ class StripeWebhookController extends CashierController
     {
         $payload = $request->all();
 
-        //Log::info('Stripe webhook received', $payload);
+        // Log::info('Stripe webhook received', $payload);
 
         switch ($payload['type']) {
             case 'customer.subscription.created':
@@ -46,6 +45,7 @@ class StripeWebhookController extends CashierController
 
         return response()->json(['status' => 'success']);
     }
+
     /**
      * Handle subscription create.
      */
@@ -93,8 +93,8 @@ class StripeWebhookController extends CashierController
 
             $product = Product::where('stripe', $newProductId)->first();
 
-            //TODO Having the comparisong between packages remaining and the quota, will mean that if someone downgrades before the end
-            //TODO add they've used all their credits, then they'll receive more credits
+            // TODO Having the comparisong between packages remaining and the quota, will mean that if someone downgrades before the end
+            // TODO add they've used all their credits, then they'll receive more credits
             if ($product) {
                 $user->update([
                     'product_id' => $product->id,
@@ -104,7 +104,7 @@ class StripeWebhookController extends CashierController
 
                 $subscription = $user->subscriptions->where('type', 'default')->first();
                 $subscription->update([
-                    'stripe_price' => $newPriceId
+                    'stripe_price' => $newPriceId,
                 ]);
 
                 Log::info("User {$user->id} updated their subscription to plan {$newProductId} with quota {$product->quota} on pricing {$newPriceId}");
@@ -149,13 +149,15 @@ class StripeWebhookController extends CashierController
             Log::warning("Payment failed for user {$user->id}");
         }
     }
+
     protected function handleInvoicePaymentSucceeded(array $payload)
     {
         // Find the user by Stripe customer ID
-        $user = \App\Models\User::where('stripe_id', $payload['customer'])->first();
+        $user = User::where('stripe_id', $payload['customer'])->first();
 
-        if (!$user) {
-            Log::warning("User not found for Stripe customer: " . $payload['customer']);
+        if (! $user) {
+            Log::warning('User not found for Stripe customer: '.$payload['customer']);
+
             return response()->json(['status' => 'user_not_found'], 404);
         }
 
@@ -166,9 +168,9 @@ class StripeWebhookController extends CashierController
             $subscription->update([
                 'stripe_status' => 'active',
             ]);
-            Log::info("Subscription updated to active for user ID: " . $user->id);
+            Log::info('Subscription updated to active for user ID: '.$user->id);
         } else {
-            Log::warning("Subscription not found for invoice: " . $payload['id']);
+            Log::warning('Subscription not found for invoice: '.$payload['id']);
         }
 
         return response()->json(['status' => 'success']);

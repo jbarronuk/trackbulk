@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Orm\Models\Quote;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +14,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('client_id', 255)->nullable()->default(NULL)->after('account_id');
-            $table->string('client_secret', 255)->nullable()->default(NULL)->after('account_id');
+            $table->string('client_id', 255)->nullable()->default(null)->after('account_id');
+            $table->string('client_secret', 255)->nullable()->default(null)->after('account_id');
         });
-        
+
     }
 
     /**
@@ -29,7 +28,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn([
                 'client_id',
-                'client_secret'
+                'client_secret',
             ]);
         });
     }

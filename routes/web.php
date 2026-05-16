@@ -2,12 +2,11 @@
 
 use App\Http\Controllers\ExportsController;
 use App\Http\Controllers\ProfileController;
-
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\SiteController;
-use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\TrackingController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'index'])->name('site.index');
 Route::get('/plans', [SiteController::class, 'plans'])->name('site.plans');

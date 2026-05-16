@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('response')->nullable();
             $table->bigInteger('account_id')->unsigned();
             $table->timestamps();
-            
+
             $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
         });
     }

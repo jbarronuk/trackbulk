@@ -5,25 +5,25 @@ namespace App\Http\Controllers;
 use App\Enums\TrackingStatus;
 use App\Enums\TrackingType;
 use App\Jobs\Query;
-use App\Jobs\QueryRoyalMail;
 use App\Models\Tracking;
 use App\Models\TrackingBatch;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class TrackingController extends Controller
 {
     /**
      * Display a listing of the tracking numbers for the authenticated user's account.
      */
-    public function index(Request $request): \Inertia\Response
+    public function index(Request $request): Response
     {
         $user = Auth::user();
 
@@ -34,14 +34,16 @@ class TrackingController extends Controller
             ->get()
             ->map(function ($batch) {
                 $batch->formatted_created_at = $batch->created_at->format('H:i');
+
                 return $batch;
             });
 
         return Inertia::render('Tracking/Index', [
             'batches' => $batches,
-            'statuses' => TrackingStatus::all(),            
+            'statuses' => TrackingStatus::all(),
         ]);
     }
+
     public function history(Request $request)
     {
         $user = Auth::user();
@@ -52,14 +54,16 @@ class TrackingController extends Controller
             ->get()
             ->map(function ($batch) {
                 $batch->formatted_created_at = $batch->created_at->format('d/m/Y H:i');
+
                 return $batch;
             });
 
         return Inertia::render('Tracking/History', [
             'batches' => $batches,
-            'statuses' => TrackingStatus::all(),            
+            'statuses' => TrackingStatus::all(),
         ]);
     }
+
     public function all(Request $request)
     {
         $user = Auth::user();
@@ -68,29 +72,29 @@ class TrackingController extends Controller
         $end = $request->end;
 
         $batches = $user->account->trackingBatches()
-        ->with('tracking')
-        ->where('created_at', '>=', $start)
-        ->where('created_at', '<=', $end)
-        ->orderBy('tracking_batch.created_at', 'desc')
-        ->get()
-        ->map(function ($batch) use ($format) {
-            if ($format === 'time') {
-                $batch->formatted_created_at = $batch->created_at->format('H:i');
-            } else {
-                $batch->formatted_created_at = $batch->created_at->format('d/m/Y H:i');
-            }
-            
-            return $batch;
-        });
+            ->with('tracking')
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->orderBy('tracking_batch.created_at', 'desc')
+            ->get()
+            ->map(function ($batch) use ($format) {
+                if ($format === 'time') {
+                    $batch->formatted_created_at = $batch->created_at->format('H:i');
+                } else {
+                    $batch->formatted_created_at = $batch->created_at->format('d/m/Y H:i');
+                }
 
-        //$trackings = $user->account->trackingBatches()->orderBy('created_at', 'desc')->get();
+                return $batch;
+            });
+
+        // $trackings = $user->account->trackingBatches()->orderBy('created_at', 'desc')->get();
         return $batches;
     }
 
     /**
      * Store a newly created tracking number in the user's account.
      */
-    public function store(Request $request): \Illuminate\Http\JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'number' => 'required|string',
@@ -100,11 +104,11 @@ class TrackingController extends Controller
         $user = Auth::user();
         if (count($numbers) > 0) {
 
-            $trackingBatch = TrackingBatch::create(['account_id'=>$user->account_id]);
+            $trackingBatch = TrackingBatch::create(['account_id' => $user->account_id]);
 
             $alreadyExisting = [];
             $depleted = false;
-            foreach($numbers as $number) {
+            foreach ($numbers as $number) {
                 if ($user->packages_remaining > 0) {
                     $existing = $user->account->tracking()->where('number', $number)->first();
                     if (is_null($existing)) {
@@ -112,7 +116,7 @@ class TrackingController extends Controller
                             'number' => $number,
                             'type' => TrackingType::RoyalMail->value,
                             'status' => TrackingStatus::Created->value,
-                            'tracking_batch_id' => $trackingBatch->id
+                            'tracking_batch_id' => $trackingBatch->id,
                         ]);
                         $user->packages_remaining = $user->packages_remaining - 1;
                         $user->save();
@@ -128,7 +132,7 @@ class TrackingController extends Controller
 
             $queued = $trackings->where('status', TrackingStatus::Created);
             $jobs = [];
-            foreach($queued as $job) {
+            foreach ($queued as $job) {
                 $jobs[] = (new Query($job))->delay(now()->addSeconds(10));
             }
 
@@ -136,21 +140,21 @@ class TrackingController extends Controller
 
             if (count($alreadyExisting) === count($numbers)) {
                 $flash = ['error' => 'No tracking created, tracking numbers already existing in our system'];
-            } else if ($depleted) {
+            } elseif ($depleted) {
                 $flash = [
-                    'error'     => 'Tracking numbers not added as the number of available tracking numbers for this month has been depleted'
+                    'error' => 'Tracking numbers not added as the number of available tracking numbers for this month has been depleted',
                 ];
-            } else if (count($alreadyExisting) > 0) {
+            } elseif (count($alreadyExisting) > 0) {
                 $flash = [
-                    'success'   => 'Successfully added tracking numbers',
-                    'error'     => 'Some tracking number not added as they already existing in our system'
+                    'success' => 'Successfully added tracking numbers',
+                    'error' => 'Some tracking number not added as they already existing in our system',
                 ];
             } else {
-                $flash = ['success'   => 'Successfull added tracking numbers'];
+                $flash = ['success' => 'Successfull added tracking numbers'];
             }
         } else {
             $flash = [
-                'error'     => 'No valid tracking numbers found'
+                'error' => 'No valid tracking numbers found',
             ];
         }
         $batches = $user->account->trackingBatches()
@@ -160,6 +164,7 @@ class TrackingController extends Controller
             ->get()
             ->map(function ($batch) {
                 $batch->formatted_created_at = $batch->created_at->format('H:i');
+
                 return $batch;
             });
 
@@ -170,9 +175,9 @@ class TrackingController extends Controller
 
         return response()->json([
             'flash' => $flash,
-            'tracking' => $batches
+            'tracking' => $batches,
         ]);
-        
+
         // // Return updated data
         // return Inertia::render('Tracking/Index', [
         //     'tracking' => $trackings,
@@ -185,16 +190,16 @@ class TrackingController extends Controller
         //     //'tracking' => $trackings,
         // ]);
 
-        //return redirect()->route('tracking.index')->with('success', 'Tracking number created successfully.');
+        // return redirect()->route('tracking.index')->with('success', 'Tracking number created successfully.');
     }
 
     /**
      * Remove the specified tracking number from the user's account.
      */
-    public function destroy(int $id, $redirect = true): ?\Illuminate\Http\RedirectResponse
+    public function destroy(int $id, $redirect = true): ?RedirectResponse
     {
         $tracking = Tracking::find($id);
-        
+
         // Ensure the tracking number belongs to the authenticated user's account
         if (Auth::user()->account->id !== $tracking->account_id) {
             return redirect()->route('tracking.index')->with('error', 'Unauthorized action.');
@@ -211,14 +216,17 @@ class TrackingController extends Controller
         if ($redirect) {
             return redirect()->route('tracking.index')->with('success', 'Tracking number deleted successfully.');
         }
+
         return null;
     }
+
     public function bulkdestroy(Request $request)
     {
         $ids = $request->input('ids');
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             $this->destroy($id, false);
         }
+
         return response()->json(['status' => 'success']);
     }
 }

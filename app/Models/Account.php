@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $type
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read int|null $tracking_count
  * @property-read int|null $tracking_batches_count
  * @property-read int|null $users_count
+ *
  * @method static \Database\Factories\AccountFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Account newQuery()
@@ -22,7 +24,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Account whereUpdatedAt($value)
- * @mixin \Illuminate\Database\Eloquent\Model
+ *
+ * @mixin Model
  */
 class Account extends Model
 {
@@ -67,5 +70,4 @@ class Account extends Model
     {
         return $this->hasMany(TrackingBatch::class, 'account_id', 'id');
     }
-
 }

@@ -35,14 +35,14 @@ class HandleInertiaRequests extends Middleware
             'stripePortal' => config('cashier.stripe_portal'),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
-                'failure' => fn () => $request->session()->get('failure')
+                'failure' => fn () => $request->session()->get('failure'),
 
             ],
             // Lazily...
             'auth.user' => fn () => $request->user()
                 ? $request->user()->only('id', 'name', 'email')
                 : null,
-            'subscription_active' => $request->user()?->subscribed('default')
+            'subscription_active' => $request->user()?->subscribed('default'),
         ]);
     }
 }

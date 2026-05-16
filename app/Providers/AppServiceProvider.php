@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -20,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->bind('files', function () {
-            return new \Illuminate\Filesystem\Filesystem;
+            return new Filesystem;
         });
     }
 
@@ -32,5 +33,4 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
         Cashier::useCustomerModel(User::class);
     }
-    
 }

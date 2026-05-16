@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class QuotaReset
 {
-
     /**
      * Execute the job.
      */
@@ -16,8 +15,8 @@ class QuotaReset
     {
         Log::info('Quota Reset');
         $users = User::all();
-        foreach($users as $user) {
-            if (!is_null($user->product_id)) {
+        foreach ($users as $user) {
+            if (! is_null($user->product_id)) {
                 $user->packages_remaining = $user->product->quota;
             } else {
                 $user->packages_remaining = AccountQuota::Free->value;

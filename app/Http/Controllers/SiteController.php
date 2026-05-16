@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 class SiteController extends Controller
 {
@@ -41,13 +41,15 @@ class SiteController extends Controller
             ]);
         }
     }
+
     public function contact()
     {
-	    return Inertia::render('Contact');
+        return Inertia::render('Contact');
     }
+
     public function submitContactForm(Request $request)
     {
-	    $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'message' => 'required|string|min:10',
@@ -56,7 +58,7 @@ class SiteController extends Controller
         // Send email
         Mail::raw("Name: {$request->name}\nEmail: {$request->email}\n\nMessage:\n{$request->message}", function ($message) {
             $message->to('jjbarron0810@gmail.com')
-                    ->subject('New Contact Form Submission');
+                ->subject('New Contact Form Submission');
         });
 
         return redirect()->back()->with('success', 'Your message has been sent!');

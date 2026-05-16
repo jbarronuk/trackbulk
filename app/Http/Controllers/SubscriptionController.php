@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
-    public function checkout(Request $request, String $price_id)
+    public function checkout(Request $request, string $price_id)
     {
-        if (!$price_id) {
+        if (! $price_id) {
             return redirect()->back()->with('error', 'Invalid subscription plan.');
         }
 
@@ -18,14 +18,16 @@ class SubscriptionController extends Controller
                 'cancel_url' => route('billing.failure'),
             ]);
 
-            $url = $session->asStripeCheckoutSession()->url;
-            return redirect()->to($url);
+        $url = $session->asStripeCheckoutSession()->url;
+
+        return redirect()->to($url);
     }
 
     public function success()
     {
         return to_route('tracking.index')->with('success', 'Thank you for your payment');
     }
+
     public function failure()
     {
         return to_route('tracking.index')->with('error', 'Something went wrong');

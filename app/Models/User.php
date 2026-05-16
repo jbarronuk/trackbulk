@@ -4,27 +4,35 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Cashier\Billable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Laravel\Cashier\Billable;
+use Laravel\Cashier\Subscription;
 
 /**
  * @method \Illuminate\Database\Eloquent\Relations\HasMany subscriptions()
  * @method \Laravel\Cashier\SubscriptionBuilder newSubscription(string $type, string|string[] $prices = [])
+ *
  * @property int $id
  * @property string $name
  * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
  * @property int $account_id
  * @property string|null $client_secret
  * @property string|null $client_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $type
  * @property string|null $stripe_id
  * @property string|null $pm_type
@@ -32,12 +40,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $trial_ends_at
  * @property int|null $product_id
  * @property int $packages_remaining
- * @property-read \App\Models\Account $account
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read Account $account
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \App\Models\Product|null $product
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Cashier\Subscription> $subscriptions
+ * @property-read Product|null $product
+ * @property-read Collection<int, Subscription> $subscriptions
  * @property-read int|null $subscriptions_count
+ *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User hasExpiredGenericTrial()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
@@ -62,12 +71,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTrialEndsAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
- * @mixin \Illuminate\Database\Eloquent\Model
+ *
+ * @mixin Model
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, Billable;
+    /** @use HasFactory<UserFactory> */
+    use Billable, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -82,7 +92,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'client_id',
         'client_secret',
         'packages_remaining',
-        'product_id'
+        'product_id',
     ];
 
     /**
@@ -109,16 +119,16 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-    * @return BelongsTo<Account, $this>
-    */
+     * @return BelongsTo<Account, $this>
+     */
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');
     }
 
     /**
-    * @return BelongsTo<Product, $this>
-    */
+     * @return BelongsTo<Product, $this>
+     */
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');

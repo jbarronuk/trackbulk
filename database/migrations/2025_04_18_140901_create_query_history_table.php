@@ -17,7 +17,7 @@ return new class extends Migration
             $table->longText('response');
             $table->bigInteger('tracking_id')->unsigned();
             $table->timestamps();
-            
+
             $table->foreign('tracking_id')->references('id')->on('tracking')->onDelete('cascade');
         });
     }
@@ -26,7 +26,7 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-    {       
+    {
         Schema::dropIfExists('tracking_history');
     }
 };

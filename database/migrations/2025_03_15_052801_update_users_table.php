@@ -27,12 +27,12 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
-            
+
             $table->dropColumn([
                 'product_id',
-                'packages_remaining'
+                'packages_remaining',
             ]);
         });
-    
+
     }
 };

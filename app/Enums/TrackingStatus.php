@@ -27,6 +27,7 @@ enum TrackingStatus: int
             self::RoyalMailDelivered => 'Delivered',
         };
     }
+
     public static function all()
     {
         return [

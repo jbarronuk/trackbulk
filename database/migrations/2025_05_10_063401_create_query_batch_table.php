@@ -20,10 +20,10 @@ return new class extends Migration
         });
         Schema::table('tracking', function (Blueprint $table) {
             $table->bigInteger('tracking_batch_id')->unsigned()->nullable();
-        
+
             $table->foreign('tracking_batch_id')->references('id')->on('tracking_batch');
         });
-        
+
     }
 
     /**
@@ -33,7 +33,7 @@ return new class extends Migration
     {
         Schema::table('tracking', function (Blueprint $table) {
             $table->dropForeign(['tracking_batch_id']);
-            
+
             $table->dropColumn([
                 'tracking_batch_id',
             ]);

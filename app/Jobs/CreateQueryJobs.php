@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Bus;
 
 class CreateQueryJobs implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
-    
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
     public function __construct()
     {
         $this->onQueue('query'); // This sets the queue dynamically
@@ -29,12 +29,12 @@ class CreateQueryJobs implements ShouldQueue
         $users = User::all();
         $jobs = [];
 
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $trackings = $user->account->tracking()->orderBy('created_at', 'desc')->get();
 
             $queued = $trackings->where('status', TrackingStatus::Created);
-        
-            foreach($queued as $job) {
+
+            foreach ($queued as $job) {
                 $jobs[] = (new Query($job))->delay(now()->addSeconds(10));
             }
         }

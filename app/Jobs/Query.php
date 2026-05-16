@@ -16,9 +16,10 @@ use Illuminate\Support\Facades\Log;
 
 class Query implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
-    
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
     protected Tracking $track;
+
     /**
      * Create a new job instance.
      */
@@ -40,14 +41,14 @@ class Query implements ShouldQueue
             'Accept' => 'application/json',
             'X-IBM-Client-Id' => $this->track->account->users[0]->client_id,
             'X-IBM-Client-Secret' => $this->track->account->users[0]->client_secret,
-        ])->get("https://api.royalmail.net/mailpieces/v2/summary", [
-            'mailPieceId' => $mailPieceId
+        ])->get('https://api.royalmail.net/mailpieces/v2/summary', [
+            'mailPieceId' => $mailPieceId,
         ]);
 
         TrackingHistory::create([
-            'number'        => $mailPieceId,
-            'response'      => $response,
-            'tracking_id'   => $this->track->id
+            'number' => $mailPieceId,
+            'response' => $response,
+            'tracking_id' => $this->track->id,
         ]);
 
         if ($response->successful()) {
@@ -58,7 +59,7 @@ class Query implements ShouldQueue
                 $data['mailPieces'][0]['status'] == '200' &&
                 isset($data['mailPieces'][0]['summary']) &&
                 isset($data['mailPieces'][0]['summary']['statusCategory'])
-            ){
+            ) {
                 $this->track->status = $this->status($data['mailPieces'][0]['summary']['statusCategory']);
                 if (isset($data['mailPieces'][0]['summary']['summaryLine'])) {
                     $this->track->summary_response = $data['mailPieces'][0]['summary']['summaryLine'];
@@ -71,12 +72,13 @@ class Query implements ShouldQueue
             }
         } else {
             // Handle error
-            Log::error("Royal Mail API request failed", [
+            Log::error('Royal Mail API request failed', [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'body' => $response->body(),
             ]);
         }
     }
+
     protected function status($statusCategory)
     {
         switch ($statusCategory) {

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('quota')->default(0);
             $table->integer('status')->nullable();
             $table->timestamps();
-            
+
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-    {       
+    {
         Schema::dropIfExists('products');
     }
 };

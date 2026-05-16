@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Bus\Batchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,9 +15,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $response
  * @property string|null $summary_response
  * @property int $account_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $tracking_batch_id
+ *
  * @method static \Database\Factories\TrackingFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tracking newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tracking newQuery()
@@ -32,7 +33,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tracking whereTrackingBatchId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tracking whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Tracking whereUpdatedAt($value)
- * @mixin \Illuminate\Database\Eloquent\Model
+ *
+ * @mixin Model
  */
 class Tracking extends Model
 {
@@ -57,20 +59,20 @@ class Tracking extends Model
         'response',
         'summary_response',
         'account_id',
-        'tracking_batch_id'
+        'tracking_batch_id',
     ];
 
     /**
-    * @return BelongsTo<Account, $this>
-    */
+     * @return BelongsTo<Account, $this>
+     */
     public function account()
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');
     }
 
     /**
-    * @return BelongsTo<TrackingBatch, $this>
-    */
+     * @return BelongsTo<TrackingBatch, $this>
+     */
     public function trackingBatch()
     {
         return $this->belongsTo(TrackingBatch::class, 'tracking_batch_id', 'id');
