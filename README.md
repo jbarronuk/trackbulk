@@ -1,5 +1,6 @@
 # TrackBulk
 [![Tests](https://github.com/jbarronuk/trackbulk/actions/workflows/tests.yml/badge.svg)](https://github.com/jbarronuk/trackbulk/actions/workflows/tests.yml)
+[![Larastan](https://github.com/jbarronuk/trackbulk/actions/workflows/larastan.yml/badge.svg)](https://github.com/jbarronuk/trackbulk/actions/workflows/larastan.yml)
 
 Bulk Royal Mail tracking for everyone. Upload a list of tracking numbers, hit go, and TrackBulk queries the Royal Mail Tracking API daily and reports the status of every parcel in one place.
  
