@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TrackingStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,6 +61,10 @@ class Tracking extends Model
         'summary_response',
         'account_id',
         'tracking_batch_id',
+    ];
+
+    protected $casts = [
+        'status' => TrackingStatus::class,
     ];
 
     /**

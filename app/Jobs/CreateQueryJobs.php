@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\TrackingStatus;
-use App\Models\User;
+use App\Models\Account;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,9 +16,11 @@ class CreateQueryJobs implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private const DELAY_SECONDS = 10;
+
     public function __construct()
     {
-        $this->onQueue('query'); // This sets the queue dynamically
+        $this->onQueue('Query');
     }
 
     /**
@@ -26,17 +28,17 @@ class CreateQueryJobs implements ShouldQueue
      */
     public function handle(): void
     {
-        $users = User::all();
         $jobs = [];
 
-        foreach ($users as $user) {
-            $trackings = $user->account->tracking()->orderBy('created_at', 'desc')->get();
+        Account::with(['tracking' => fn ($q) => $q->where('status', TrackingStatus::Created->value)])
+            ->each(function (Account $account) use (&$jobs) {
+                foreach ($account->tracking as $tracking) {
+                    $jobs[] = (new Query($tracking))->delay(now()->addSeconds(self::DELAY_SECONDS));
+                }
+            });
 
-            $queued = $trackings->where('status', TrackingStatus::Created);
-
-            foreach ($queued as $job) {
-                $jobs[] = (new Query($job))->delay(now()->addSeconds(10));
-            }
+        if (empty($jobs)) {
+            return;
         }
 
         Bus::batch($jobs)->name('Query')->onQueue('Query')->dispatch();
