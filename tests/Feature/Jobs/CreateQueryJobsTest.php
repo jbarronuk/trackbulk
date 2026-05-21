@@ -17,7 +17,7 @@ class CreateQueryJobsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_dispatches_batch_with_created_trackings(): void
+    public function testDispatchesBatchWithCreatedTrackings(): void
     {
         Bus::fake();
 
@@ -45,7 +45,7 @@ class CreateQueryJobsTest extends TestCase
         });
     }
 
-    public function test_aggregates_created_trackings_across_users(): void
+    public function testAggregatesCreatedTrackingsAcrossUsers(): void
     {
         Bus::fake();
 
@@ -65,7 +65,7 @@ class CreateQueryJobsTest extends TestCase
         Bus::assertBatched(fn (PendingBatch $batch) => $batch->jobs->count() === 4);
     }
 
-    public function test_does_nothing_when_no_users_exist(): void
+    public function testDoesNothingWhenNoUsersExist(): void
     {
         Bus::fake();
 
@@ -74,7 +74,7 @@ class CreateQueryJobsTest extends TestCase
         Bus::assertNothingBatched();
     }
 
-    public function test_does_nothing_when_no_created_trackings_exist(): void
+    public function testDoesNothingWhenNoCreatedTrackingsExist(): void
     {
         Bus::fake();
 
@@ -93,7 +93,7 @@ class CreateQueryJobsTest extends TestCase
         Bus::assertNothingBatched();
     }
 
-    public function test_does_not_duplicate_trackings_when_account_has_multiple_users(): void
+    public function testDoesNotDuplicateTrackingsWhenAccountHasMultipleUsers(): void
     {
         Bus::fake();
 

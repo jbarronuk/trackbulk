@@ -30,5 +30,5 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['stripe', 'quota'];
+    protected $fillable = ['stripe', 'quota', 'status'];
 }
