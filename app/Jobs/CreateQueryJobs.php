@@ -16,7 +16,7 @@ class CreateQueryJobs implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private const DELAY_SECONDS = 10;
+    private const DELAY_SECONDS = 5;
 
     public function __construct()
     {
@@ -33,7 +33,7 @@ class CreateQueryJobs implements ShouldQueue
         Account::with(['tracking' => fn ($q) => $q->where('status', TrackingStatus::Created->value)])
             ->each(function (Account $account) use (&$jobs) {
                 foreach ($account->tracking as $tracking) {
-                    $jobs[] = (new Query($tracking))->delay(now()->addSeconds(self::DELAY_SECONDS));
+                    $jobs[] = (new Query($tracking))->delay(now()->addSeconds(self::DELAY_SECONDS * (count($jobs) + 1)));
                 }
             });
 
