@@ -33,8 +33,9 @@ class QuotaReset implements ShouldQueue
             ->chunkById(500, function ($users) use (&$processed, &$failed) {
                 foreach ($users as $user) {
                     try {
-                        $user->packages_remaining = $user->product?->quota
-                            ?? AccountQuota::Free->value;
+                        $user->packages_remaining = $user->product_id
+                            ? $user->product->quota
+                            : AccountQuota::Free->value;
                         $user->save();
                         $processed++;
                     } catch (Throwable $e) {
