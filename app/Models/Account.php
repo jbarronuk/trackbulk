@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use App\Exceptions\MissingApiCredentialsException;
+use App\Services\RoyalMail\RoyalMailCredentials;
 
 /**
  * @property int $id
@@ -69,5 +71,26 @@ class Account extends Model
     public function trackingBatches()
     {
         return $this->hasMany(TrackingBatch::class, 'account_id', 'id');
+    }
+    /**
+     * Resolve the Royal Mail API credentials for this account.
+     *
+     * @throws MissingApiCredentialsException
+     */
+    public function royalMailCredentials(): RoyalMailCredentials
+    {
+        $user = $this->users()
+            ->whereNotNull('client_id')
+            ->whereNotNull('client_secret')
+            ->first();
+
+        if (! $user) {
+            throw new MissingApiCredentialsException($this->id);
+        }
+
+        return new RoyalMailCredentials(
+            clientId: $user->client_id,
+            clientSecret: $user->client_secret,
+        );
     }
 }

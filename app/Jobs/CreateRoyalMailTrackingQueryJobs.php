@@ -12,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 
-class CreateQueryJobs implements ShouldQueue
+class CreateRoyalMailTrackingQueryJobs implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -33,7 +33,7 @@ class CreateQueryJobs implements ShouldQueue
         Account::with(['tracking' => fn ($q) => $q->where('status', TrackingStatus::Created->value)])
             ->each(function (Account $account) use (&$jobs) {
                 foreach ($account->tracking as $tracking) {
-                    $jobs[] = (new Query($tracking))->delay(now()->addSeconds(self::DELAY_SECONDS * (count($jobs) + 1)));
+                    $jobs[] = (new QueryRoyalMailTracking($tracking))->delay(now()->addSeconds(self::DELAY_SECONDS * (count($jobs) + 1)));
                 }
             });
 
@@ -41,6 +41,6 @@ class CreateQueryJobs implements ShouldQueue
             return;
         }
 
-        Bus::batch($jobs)->name('Query')->onQueue('Query')->dispatch();
+        Bus::batch($jobs)->name('QueryRoyalMailTracking')->onQueue('Query')->dispatch();
     }
 }
