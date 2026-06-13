@@ -4,23 +4,20 @@ namespace App\Jobs;
 
 use App\Enums\TrackingStatus;
 use App\Models\Account;
-use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 
 class CreateRoyalMailTrackingQueryJobs implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Queueable;
 
     private const DELAY_SECONDS = 5;
+    private const QUEUE = 'Query';
 
     public function __construct()
     {
-        $this->onQueue('Query');
+        $this->onQueue(self::QUEUE);
     }
 
     /**
@@ -30,10 +27,14 @@ class CreateRoyalMailTrackingQueryJobs implements ShouldQueue
     {
         $jobs = [];
 
-        Account::with(['tracking' => fn ($q) => $q->where('status', TrackingStatus::Created->value)])
+        $createdTracking = fn ($query) => $query->where('status', TrackingStatus::Created->value);
+ 
+        Account::whereHas('tracking', $createdTracking)
+            ->with(['tracking' => $createdTracking])
             ->each(function (Account $account) use (&$jobs) {
                 foreach ($account->tracking as $tracking) {
-                    $jobs[] = (new QueryRoyalMailTracking($tracking))->delay(now()->addSeconds(self::DELAY_SECONDS * (count($jobs) + 1)));
+                    $jobs[] = (new QueryRoyalMailTracking($tracking))
+                        ->delay(now()->addSeconds(self::DELAY_SECONDS * (count($jobs) + 1)));
                 }
             });
 
@@ -41,6 +42,6 @@ class CreateRoyalMailTrackingQueryJobs implements ShouldQueue
             return;
         }
 
-        Bus::batch($jobs)->name('QueryRoyalMailTracking')->onQueue('Query')->dispatch();
+        Bus::batch($jobs)->name('QueryRoyalMailTracking')->onQueue(self::QUEUE)->dispatch();
     }
 }
