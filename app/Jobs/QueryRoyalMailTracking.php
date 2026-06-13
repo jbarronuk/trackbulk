@@ -8,10 +8,7 @@ use App\Models\TrackingHistory;
 use App\Services\RoyalMail\RoyalMailClient;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -21,16 +18,15 @@ use Illuminate\Support\Facades\Log;
 class QueryRoyalMailTracking implements ShouldQueue
 {
     use Batchable;
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
 
     private const STATUS_SUCCESS = '200';
 
     public function __construct(
         private readonly Tracking $tracking,
     ) {
+        // Claim the record at dispatch time so a later CreateRoyalMailTrackingQueryJobs
+        // run (which only selects 'Created' records) won't queue this tracking twice.
         $this->tracking->status = TrackingStatus::Queued->value;
         $this->tracking->save();
     }
