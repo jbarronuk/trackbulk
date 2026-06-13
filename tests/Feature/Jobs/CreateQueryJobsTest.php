@@ -3,8 +3,8 @@
 namespace Tests\Feature\Jobs;
 
 use App\Enums\TrackingStatus;
-use App\Jobs\CreateQueryJobs;
-use App\Jobs\Query;
+use App\Jobs\CreateRoyalMailTrackingQueryJobs as CreateQueryJobs;
+use App\Jobs\QueryRoyalMailTracking;
 use App\Models\Account;
 use App\Models\Tracking;
 use App\Models\User;
@@ -39,9 +39,9 @@ class CreateQueryJobsTest extends TestCase
         (new CreateQueryJobs())->handle();
 
         Bus::assertBatched(function (PendingBatch $batch) {
-            return $batch->name === 'Query'
+            return $batch->name === 'QueryRoyalMailTracking'
                 && $batch->jobs->count() === 2
-                && $batch->jobs->every(fn ($job) => $job instanceof Query);
+                && $batch->jobs->every(fn ($job) => $job instanceof QueryRoyalMailTracking);
         });
     }
 

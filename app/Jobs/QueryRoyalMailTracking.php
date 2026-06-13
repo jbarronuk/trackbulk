@@ -100,14 +100,14 @@ class QueryRoyalMailTracking implements ShouldQueue
             }
         }
 
-        $this->tracking->response = $mailPiece;
+        $this->tracking->response = json_encode($mailPiece);
         $this->tracking->save();
     }
 
     /**
      * Map a Royal Mail status category to an internal tracking status.
      */
-    private function mapStatus(string $statusCategory): string
+    private function mapStatus(string $statusCategory): int
     {
         return match ($statusCategory) {
             'Ready for Delivery' => TrackingStatus::RoyalMailReadyForDelivery->value,
