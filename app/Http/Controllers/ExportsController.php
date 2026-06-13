@@ -10,36 +10,31 @@ use Maatwebsite\Excel\Exporter;
 
 class ExportsController extends Controller
 {
-    private $exporter;
-
-    public function __construct(Exporter $exporter)
-    {
-        $this->exporter = $exporter;
-    }
+    public function __construct(
+        private readonly Exporter $exporter,
+    ) {}
 
     public function tracking(Request $request)
     {
-        // TODO finish off the batch stuff and test the date range stuff
         $current = Carbon::now();
+        $filename = 'tracking-'.$current->format('y-m-d').'.xlsx';
 
         if ($request->type === 'daterange') {
-
             $start = Carbon::parse($request->start);
             $end = Carbon::parse($request->end);
 
             return $this->exporter->download(new TrackingDateRangeExport(
                 $request->user(),
                 $start,
-                $end
-            ), 'tracking-'.$current->format('y-m-d').'.xlsx');
+                $end,
+            ), $filename);
+        }
 
-        } elseif ($request->type === 'selection') {
-            $selection = $request->selection;
-
+        if ($request->type === 'selection') {
             return $this->exporter->download(new TrackingSelectionExport(
                 $request->user(),
-                $selection,
-            ), 'tracking-'.$current->format('y-m-d').'.xlsx');
+                $request->selection,
+            ), $filename);
         }
     }
 }
