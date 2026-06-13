@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\TrackingStatus;
 use App\Enums\TrackingType;
 use App\Jobs\Query;
+use App\Jobs\QueryRoyalMailTracking;
 use App\Models\Tracking;
 use App\Models\TrackingBatch;
 use App\Models\User;
@@ -133,7 +134,7 @@ class TrackingController extends Controller
             $queued = $trackings->where('status', TrackingStatus::Created);
             $jobs = [];
             foreach ($queued as $job) {
-                $jobs[] = (new Query($job))->delay(now()->addSeconds(10));
+                $jobs[] = (new QueryRoyalMailTracking($job))->delay(now()->addSeconds(10));
             }
 
             $batch = Bus::batch($jobs)->name('Query')->onQueue('Query')->dispatch();
