@@ -13,7 +13,6 @@ use Illuminate\Support\Carbon;
  * @property int $account_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string $formatted_created_at
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch newQuery()
@@ -42,13 +41,12 @@ class TrackingBatch extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'account_id',
     ];
 
     /**
      * @return HasMany<Tracking, $this>
      */
-    public function tracking()
+    public function tracking(): HasMany
     {
         return $this->hasMany(Tracking::class);
     }
@@ -56,8 +54,8 @@ class TrackingBatch extends Model
     /**
      * @return BelongsTo<Account, $this>
      */
-    public function account()
+    public function account(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'account_id', 'id');
+        return $this->belongsTo(Account::class);
     }
 }

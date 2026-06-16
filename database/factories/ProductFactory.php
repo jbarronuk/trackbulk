@@ -12,7 +12,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'stripe' => 'price_' . $this->faker->unique()->bothify('??##??##??##'),
+            'stripe_price_id' => 'price_' . $this->faker->unique()->bothify('??##??##??##'),
             'quota' => $this->faker->numberBetween(10, 100),
             'status' => 1,
         ];

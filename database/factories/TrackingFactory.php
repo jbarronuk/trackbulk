@@ -2,8 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Enums\TrackingStatus;
+use App\Enums\TrackingType;
 use App\Models\Account;
 use App\Models\Tracking;
+use App\Models\TrackingBatch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TrackingFactory extends Factory
@@ -24,10 +27,11 @@ class TrackingFactory extends Factory
     {
         return [
             'number' => $this->faker->uuid, // Generates a random UUID for the number
-            'type' => $this->faker->numberBetween(1, 5), // Random type between 1 and 5
-            'status' => $this->faker->optional()->numberBetween(1, 10), // Random or null status
+            'type' => TrackingType::RoyalMail,
+            'status' => TrackingStatus::Unknown,
             'response' => $this->faker->optional()->sentence, // Random sentence or null
             'account_id' => Account::factory(), // Creates a related Account record
+            'tracking_batch_id' => TrackingBatch::factory()
         ];
     }
 }

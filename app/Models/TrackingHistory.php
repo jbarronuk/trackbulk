@@ -29,8 +29,6 @@ use Illuminate\Support\Carbon;
  */
 class TrackingHistory extends Model
 {
-    use HasFactory;
-
     /**
      * The table associated with the model.
      *
@@ -52,8 +50,8 @@ class TrackingHistory extends Model
     /**
      * @return BelongsTo<Tracking, $this>
      */
-    public function tracking()
+    public function tracking(): BelongsTo
     {
-        return $this->belongsTo(Tracking::class, 'tracking_id', 'id');
+        return $this->belongsTo(Tracking::class);
     }
 }

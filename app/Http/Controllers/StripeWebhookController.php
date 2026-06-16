@@ -55,7 +55,7 @@ class StripeWebhookController extends CashierController
 
         if ($user) {
             $newProductId = $subscription['items']['data'][0]['price']['product'];
-            $product = Product::where('stripe', $newProductId)->first();
+            $product = Product::where('stripe_price_id', $newProductId)->first();
 
             if ($product) {
                 // Create a new subscription in your system
@@ -91,7 +91,7 @@ class StripeWebhookController extends CashierController
             $newProductId = $subscription['items']['data'][0]['price']['product'];
             $newPriceId = $subscription['items']['data'][0]['price']['id'];
 
-            $product = Product::where('stripe', $newProductId)->first();
+            $product = Product::where('stripe_price_id', $newProductId)->first();
 
             // TODO Having the comparisong between packages remaining and the quota, will mean that if someone downgrades before the end
             // TODO add they've used all their credits, then they'll receive more credits

@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -41,18 +42,19 @@ class RegisteredUserController extends Controller
             'client_secret' => 'required|string|max:255',
         ]);
 
-        $account = Account::create([
-            'type' => AccountType::Free->value,
-        ]);
+        $user = DB::transaction(function () use ($request) {
+            $account = Account::create([
+                'type' => AccountType::Free->value,
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'account_id' => $account->id,
-            'client_id' => $request->client_id,
-            'client_secret' => $request->client_secret,
-        ]);
+            return $account->users()->create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
+                'client_id' => $request->client_id,
+                'client_secret' => $request->client_secret,
+            ]);
+        });
 
         event(new Registered($user));
 

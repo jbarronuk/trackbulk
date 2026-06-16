@@ -221,11 +221,13 @@ class TrackingControllerTest extends TestCase
     {
         $batchId ??= $user->account->trackingBatches()->create([])->id;
 
-        return $user->account->tracking()->create([
-            'number' => $number,
-            'type' => TrackingType::RoyalMail->value,
-            'status' => TrackingStatus::Created->value,
-            'tracking_batch_id' => $batchId,
-        ]);
+        return Tracking::factory()
+            ->for($user->account)
+            ->create([
+                'number' => $number,
+                'type' => TrackingType::RoyalMail,
+                'status' => TrackingStatus::Created,
+                'tracking_batch_id' => $batchId,
+            ]);
     }
 }

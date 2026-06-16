@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TrackingStatus;
+use App\Enums\TrackingType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,8 +12,8 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string $number
- * @property int $type
- * @property int|null $status
+ * @property int|TrackingType $type
+ * @property int|TrackingStatus|null $status
  * @property string|null $response
  * @property string|null $summary_response
  * @property int $account_id
@@ -58,19 +59,18 @@ class Tracking extends Model
         'type',
         'status',
         'response',
-        'summary_response',
-        'account_id',
-        'tracking_batch_id',
+        'summary_response'
     ];
 
     protected $casts = [
-        'status' => TrackingStatus::class,
+        'status'    => TrackingStatus::class,
+        'type'      => TrackingType::class
     ];
 
     /**
      * @return BelongsTo<Account, $this>
      */
-    public function account()
+    public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');
     }
@@ -78,7 +78,7 @@ class Tracking extends Model
     /**
      * @return BelongsTo<TrackingBatch, $this>
      */
-    public function trackingBatch()
+    public function trackingBatch(): BelongsTo
     {
         return $this->belongsTo(TrackingBatch::class, 'tracking_batch_id', 'id');
     }

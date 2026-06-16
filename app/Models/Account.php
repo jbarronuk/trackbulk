@@ -52,7 +52,7 @@ class Account extends Model
     /**
      * @return HasMany<User, $this>
      */
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class, 'account_id', 'id');
     }
@@ -60,7 +60,7 @@ class Account extends Model
     /**
      * @return HasMany<Tracking, $this>
      */
-    public function tracking()
+    public function tracking(): HasMany
     {
         return $this->hasMany(Tracking::class, 'account_id', 'id');
     }
@@ -68,7 +68,7 @@ class Account extends Model
     /**
      * @return HasMany<TrackingBatch, $this>
      */
-    public function trackingBatches()
+    public function trackingBatches(): HasMany
     {
         return $this->hasMany(TrackingBatch::class, 'account_id', 'id');
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\UserType;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,11 +34,11 @@ use Laravel\Cashier\Subscription;
  * @property string|null $client_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property int $type
+ * @property UserType $type
  * @property string|null $stripe_id
  * @property string|null $pm_type
  * @property string|null $pm_last_four
- * @property string|null $trial_ends_at
+ * @property Carbon|null $trial_ends_at
  * @property int|null $product_id
  * @property int $packages_remaining
  * @property-read Account $account
@@ -88,11 +89,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'account_id',
         'client_id',
         'client_secret',
-        'packages_remaining',
-        'product_id',
     ];
 
     /**
@@ -103,6 +101,10 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'client_id',
+        'client_secret',
+        'stripe_id',
+
     ];
 
     /**
@@ -114,25 +116,26 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'client_id' => 'encrypted',
-            'client_secret' => 'encrypted',
+            'password'          => 'hashed',
+            'client_id'         => 'encrypted',
+            'client_secret'     => 'encrypted',
+            'type'              => UserType::class
         ];
     }
 
     /**
      * @return BelongsTo<Account, $this>
      */
-    public function account()
+    public function account(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'account_id', 'id');
+        return $this->belongsTo(Account::class);
     }
 
     /**
      * @return BelongsTo<Product, $this>
      */
-    public function product()
+    public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class);
     }
 }

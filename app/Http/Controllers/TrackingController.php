@@ -105,7 +105,7 @@ class TrackingController extends Controller
 
         $user = Auth::user();
 
-        $trackingBatch = TrackingBatch::create(['account_id' => $user->account_id]);
+        $trackingBatch = $user->account->trackingBatches()->create();
 
         $alreadyExisting = [];
         $depleted = false;
