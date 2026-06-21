@@ -1,12 +1,15 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
-import Header from '@/Components/Header.vue'
-import { useForm } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { Head, useForm } from '@inertiajs/vue3'
+import MarketingLayout from '@/Layouts/MarketingLayout.vue'
 
 defineProps({
-    canLogin: {},
-    canRegister: {},
+    canLogin: { type: Boolean, default: false },
+    canRegister: { type: Boolean, default: false },
 })
+
+const sent = ref(false)
+
 const form = useForm({
     name: '',
     email: '',
@@ -15,165 +18,80 @@ const form = useForm({
 
 const submit = () => {
     form.post(route('contact.submit'), {
+        preserveScroll: true,
         onSuccess: () => {
-            alert('Your message has been sent!')
+            sent.value = true
             form.reset()
-        },
-        onError: (errors) => {
-            console.error(errors)
         },
     })
 }
 </script>
+
 <template>
-    <Head title="Plans" />
-    <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
-        <svg
-            id="background"
-            class="absolute -left-20 top-0 max-w-[877px]"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 877 968"
-        >
-            <g clip-path="url(#a)">
-                <circle
-                    cx="391"
-                    cy="391"
-                    r="390.5"
-                    stroke="#ccc"
-                    transform="matrix(-1 0 0 1 416 -56)"
-                />
-                <circle
-                    cx="468"
-                    cy="468"
-                    r="467.5"
-                    stroke="#ccc"
-                    opacity=".3"
-                    transform="matrix(-1 0 0 1 493 -133)"
-                />
-                <circle
-                    cx="558"
-                    cy="558"
-                    r="557.5"
-                    stroke="#ccc"
-                    opacity=".1"
-                    transform="matrix(-1 0 0 1 583 -223)"
-                />
-                <g filter="url(#b)">
-                    <ellipse
-                        cx="583"
-                        cy="229.5"
-                        fill="#ccc"
-                        rx="583"
-                        ry="229.5"
-                        transform="matrix(-1 0 0 1 621 -9)"
+    <Head title="Contact" />
+
+    <MarketingLayout :can-login="canLogin" :can-register="canRegister">
+        <section class="mt-12 max-w-xl">
+            <h2 class="mb-4 text-2xl font-bold text-black dark:text-white">Contact Us</h2>
+
+            <p
+                v-if="sent"
+                class="mb-4 rounded border border-green-200 bg-green-50 p-3 text-sm text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300"
+            >
+                Thanks! Your message has been sent.
+            </p>
+
+            <form @submit.prevent="submit" class="space-y-4">
+                <div>
+                    <label for="name" class="block font-semibold text-black dark:text-white">Name</label>
+                    <input
+                        id="name"
+                        v-model="form.name"
+                        type="text"
+                        required
+                        class="w-full rounded border p-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
                     />
-                </g>
-                <g filter="url(#c)">
-                    <ellipse
-                        cx="262"
-                        cy="184.5"
-                        fill="#fff"
-                        rx="262"
-                        ry="184.5"
-                        transform="matrix(-1 0 0 1 99 42)"
+                    <p v-if="form.errors.name" class="mt-1 text-sm text-red-500">
+                        {{ form.errors.name }}
+                    </p>
+                </div>
+
+                <div>
+                    <label for="email" class="block font-semibold text-black dark:text-white">Email</label>
+                    <input
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        required
+                        class="w-full rounded border p-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
                     />
-                </g>
-            </g>
-            <defs>
-                <filter
-                    id="b"
-                    width="1614"
-                    height="907"
-                    x="-769"
-                    y="-233"
-                    color-interpolation-filters="sRGB"
-                    filterUnits="userSpaceOnUse"
+                    <p v-if="form.errors.email" class="mt-1 text-sm text-red-500">
+                        {{ form.errors.email }}
+                    </p>
+                </div>
+
+                <div>
+                    <label for="message" class="block font-semibold text-black dark:text-white">Message</label>
+                    <textarea
+                        id="message"
+                        v-model="form.message"
+                        rows="4"
+                        required
+                        class="w-full rounded border p-2 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                    ></textarea>
+                    <p v-if="form.errors.message" class="mt-1 text-sm text-red-500">
+                        {{ form.errors.message }}
+                    </p>
+                </div>
+
+                <button
+                    type="submit"
+                    :disabled="form.processing"
+                    class="rounded-md bg-[#FF2D20] px-4 py-2 text-white transition hover:bg-[#e0261c] disabled:opacity-50"
                 >
-                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                    <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                    <feGaussianBlur result="effect1_foregroundBlur_3089_39042" stdDeviation="112" />
-                </filter>
-                <filter
-                    id="c"
-                    width="972"
-                    height="817"
-                    x="-649"
-                    y="-182"
-                    color-interpolation-filters="sRGB"
-                    filterUnits="userSpaceOnUse"
-                >
-                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                    <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                    <feGaussianBlur result="effect1_foregroundBlur_3089_39042" stdDeviation="112" />
-                </filter>
-                <clipPath id="a"><path fill="#fff" d="M877 0H0v968h877z" /></clipPath>
-            </defs>
-        </svg>
-        <div
-            class="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white"
-        >
-            <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-                <Header canLogin="canLogin" canRegister="canRegister"></Header>
-
-                <main class="mt-6">
-                    <section class="mt-12">
-                        <h2 class="mb-4 text-2xl font-bold">Contact Us</h2>
-                        <form @submit.prevent="submit">
-                            <div class="mb-4">
-                                <label class="block font-semibold">Name</label>
-                                <input
-                                    v-model="form.name"
-                                    type="text"
-                                    class="w-full rounded border p-2"
-                                    required
-                                />
-                                <div v-if="form.errors.name" class="text-sm text-red-500">
-                                    {{ form.errors.name }}
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block font-semibold">Email</label>
-                                <input
-                                    v-model="form.email"
-                                    type="email"
-                                    class="w-full rounded border p-2"
-                                    required
-                                />
-                                <div v-if="form.errors.email" class="text-sm text-red-500">
-                                    {{ form.errors.email }}
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block font-semibold">Message</label>
-                                <textarea
-                                    v-model="form.message"
-                                    rows="4"
-                                    class="w-full rounded border p-2"
-                                    required
-                                ></textarea>
-                                <div v-if="form.errors.message" class="text-sm text-red-500">
-                                    {{ form.errors.message }}
-                                </div>
-                            </div>
-
-                            <button
-                                type="submit"
-                                :disabled="form.processing"
-                                class="rounded bg-blue-500 px-4 py-2 text-white"
-                            >
-                                Send
-                            </button>
-                        </form>
-                    </section>
-                </main>
-
-                <footer class="py-16 text-center text-sm text-black dark:text-white/70">
-                    TrackBulk &copy {{ new Date().getFullYear() }}
-                </footer>
-            </div>
-        </div>
-    </div>
+                    {{ form.processing ? 'Sending…' : 'Send' }}
+                </button>
+            </form>
+        </section>
+    </MarketingLayout>
 </template>

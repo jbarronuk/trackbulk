@@ -5,6 +5,7 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue'
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue'
 import { Head } from '@inertiajs/vue3'
 import PackagesRemaining from './Partials/PackagesRemaining.vue'
+import SettingsCard from '../../Components/SettingsCard.vue'
 
 defineProps({
     mustVerifyEmail: {
@@ -28,25 +29,24 @@ defineProps({
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
+                <SettingsCard>
                     <UpdateProfileInformationForm
                         :must-verify-email="mustVerifyEmail"
                         :status="status"
-                        class="max-w-xl"
                     />
-                </div>
+                </SettingsCard>
 
-                <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                    <PackagesRemaining class="max-w-xl" />
-                </div>
+                <SettingsCard>
+                    <PackagesRemaining />
+                </SettingsCard>
 
-                <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                    <UpdatePasswordForm class="max-w-xl" />
-                </div>
+                <SettingsCard>
+                    <UpdatePasswordForm />
+                </SettingsCard>
 
-                <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                    <DeleteUserForm class="max-w-xl" />
-                </div>
+                <SettingsCard>
+                    <DeleteUserForm />
+                </SettingsCard>
             </div>
         </div>
     </AuthenticatedLayout>
