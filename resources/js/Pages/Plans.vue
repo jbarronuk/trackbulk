@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Head } from '@inertiajs/vue3'
-import PricingPageShell from '@/Components/Pricing/PricingPageShell.vue'
+import MarketingLayout from '@/Layouts/MarketingLayout.vue'
 import BillingToggle from '@/Components/Pricing/BillingToggle.vue'
 import PricingCard from '@/Components/Pricing/PricingCard.vue'
 import PlanCta from '@/Components/Pricing/PlanCta.vue'
@@ -26,8 +26,8 @@ const plans = pricingPlans.map((plan) => ({ ...plan, cta: callsToAction[plan.id]
 
 <template>
     <Head title="Plans" />
-
-    <PricingPageShell :can-login="canLogin" :can-register="canRegister">
+>
+    <MarketingLayout :can-login="canLogin" :can-register="canRegister">
         <section class="mt-12">
             <BillingToggle v-model="isYearly" />
 
@@ -51,5 +51,5 @@ const plans = pricingPlans.map((plan) => ({ ...plan, cta: callsToAction[plan.id]
                 </PricingCard>
             </div>
         </section>
-    </PricingPageShell>
+    </MarketingLayout>
 </template>
