@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * @property int $id
  * @property int $account_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read string|null $formatted_created_at
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TrackingBatch newQuery()
@@ -43,6 +45,8 @@ class TrackingBatch extends Model
     protected $fillable = [
     ];
 
+    protected $appends = ['formatted_created_at'];
+
     /**
      * @return HasMany<Tracking, $this>
      */
@@ -57,5 +61,12 @@ class TrackingBatch extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    protected function formattedCreatedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->created_at?->format('H:i'),
+        );
     }
 }
