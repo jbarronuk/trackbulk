@@ -5,7 +5,7 @@ import PricingPageShell from '@/Components/Pricing/PricingPageShell.vue'
 import BillingToggle from '@/Components/Pricing/BillingToggle.vue'
 import PricingCard from '@/Components/Pricing/PricingCard.vue'
 import PlanCta from '@/Components/Pricing/PlanCta.vue'
-import { pricingPlans, priceForPeriod } from '@/data/pricingPlans'
+import { pricingPlans, priceForPeriod } from '@/Data/pricingPlans'
 
 defineProps({
     canLogin: { type: Boolean, default: false },
