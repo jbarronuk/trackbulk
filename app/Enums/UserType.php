@@ -13,9 +13,9 @@ enum UserType: int
     case Admin = 1;
     case Standard = 2;
 
-    public static function map(int $value): string
+    public function label(): string
     {
-        return match (self::from($value)) {
+        return match ($this) {
             self::Disabled => 'Disabled',
             self::Admin => 'Admin',
             self::Standard => 'Standard',

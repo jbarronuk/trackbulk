@@ -33,7 +33,7 @@ class TrackingController extends Controller
 
         return Inertia::render('Tracking/Index', [
             'batches' => $batches,
-            'statuses' => TrackingStatus::all(),
+            'statuses' => TrackingStatus::labels(), 
         ]);
     }
 
@@ -51,7 +51,7 @@ class TrackingController extends Controller
 
         return Inertia::render('Tracking/History', [
             'batches' => $batches,
-            'statuses' => TrackingStatus::all(),
+            'statuses' => TrackingStatus::labels(),
         ]);
     }
 

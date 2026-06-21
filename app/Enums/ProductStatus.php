@@ -12,9 +12,9 @@ enum ProductStatus: int
     case Disabled = 0;
     case Active = 1;
 
-    public static function map(int $value): string
+    public function label(): string
     {
-        return match (self::from($value)) {
+        return match ($this) {
             self::Disabled => 'Disabled',
             self::Active => 'Active',
         };

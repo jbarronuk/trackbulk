@@ -8,13 +8,13 @@ trait Labels
 {
     public static function labels(): array
     {
-        $cases = static::cases();
         $options = [];
-        foreach ($cases as $case) {
-            $label = static::map($case->value);
-            $options[$case->value] = Str::title($label);
+        foreach (static::cases() as $case) {
+            $options[$case->value] = $case->label();
         }
 
         return $options;
     }
+
+    abstract public function label(): string;
 }
