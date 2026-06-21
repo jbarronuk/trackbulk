@@ -27,14 +27,9 @@ class TrackingController extends Controller
 
         $batches = $user->account->trackingBatches()
             ->with('tracking')
-            ->where('created_at', '>', Carbon::now()->startOfDay()->format('Y-m-d H:i:s'))
+            ->where('created_at', '>=', now()->startOfDay())
             ->orderBy('tracking_batch.created_at', 'desc')
-            ->get()
-            ->map(function ($batch) {
-                $batch->formatted_created_at = $batch->created_at->format('H:i');
-
-                return $batch;
-            });
+            ->get();
 
         return Inertia::render('Tracking/Index', [
             'batches' => $batches,
@@ -52,12 +47,7 @@ class TrackingController extends Controller
         $batches = $user->account->trackingBatches()
             ->with('tracking')
             ->orderBy('tracking_batch.created_at', 'desc')
-            ->get()
-            ->map(function ($batch) {
-                $batch->formatted_created_at = $batch->created_at->format('d/m/Y H:i');
-
-                return $batch;
-            });
+            ->get();
 
         return Inertia::render('Tracking/History', [
             'batches' => $batches,
@@ -80,14 +70,7 @@ class TrackingController extends Controller
             ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end)
             ->orderBy('tracking_batch.created_at', 'desc')
-            ->get()
-            ->map(function ($batch) use ($format) {
-                $batch->formatted_created_at = $format === 'time'
-                    ? $batch->created_at->format('H:i')
-                    : $batch->created_at->format('d/m/Y H:i');
-
-                return $batch;
-            });
+            ->get();
 
         return response()->json($batches);
     }
@@ -163,14 +146,9 @@ class TrackingController extends Controller
 
         $batches = $user->account->trackingBatches()
             ->with('tracking')
-            ->where('created_at', '>=', Carbon::now()->startOfDay())
+            ->where('created_at', '>=', now()->startOfDay())
             ->orderBy('tracking_batch.created_at', 'desc')
-            ->get()
-            ->map(function ($batch) {
-                $batch->formatted_created_at = $batch->created_at->format('H:i');
-
-                return $batch;
-            });
+            ->get();
 
         return response()->json([
             'flash' => $flash,
