@@ -11,9 +11,9 @@ enum AccountQuota: int
 
     case Free = 20;
 
-    public static function map(int $value): string
+    public function label(): string
     {
-        return match (self::from($value)) {
+        return match ($this) {
             self::Free => 'Free',
         };
     }

@@ -16,9 +16,9 @@ enum TrackingStatus: int
     case RoyalMailReadyForDelivery = 5;
     case RoyalMailDelivered = 6;
 
-    public static function map(int $value): string
+    public function label(): string
     {
-        return match (self::from($value)) {
+        return match ($this) {
             self::Unknown => 'Unknown',
             self::Created => 'Created',
             self::Queued => 'Queued',
@@ -26,17 +26,5 @@ enum TrackingStatus: int
             self::RoyalMailReadyForDelivery => 'Ready for Delivery',
             self::RoyalMailDelivered => 'Delivered',
         };
-    }
-
-    public static function all()
-    {
-        return [
-            self::Unknown->value => 'Unknown',
-            self::Created->value => 'Created',
-            self::Queued->value => 'Queued',
-            self::Querying->value => 'Querying',
-            self::RoyalMailReadyForDelivery->value => 'Ready for Delivery',
-            self::RoyalMailDelivered->value => 'Delivered',
-        ];
     }
 }
