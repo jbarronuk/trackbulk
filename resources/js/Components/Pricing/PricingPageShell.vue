@@ -1,6 +1,6 @@
 <script setup>
 import Header from '@/Components/Header.vue'
-import BackgroundPattern from '@/Components/Pricing/BackgroundPattern.vue'
+import BackgroundPattern from '@/Components/BackgroundPattern.vue'
 
 defineProps({
     canLogin: { type: Boolean, default: false },
