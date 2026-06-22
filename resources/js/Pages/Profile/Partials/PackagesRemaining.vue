@@ -1,16 +1,13 @@
 <script setup>
-import InputError from '@/Components/InputError.vue'
 import InputLabel from '@/Components/InputLabel.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
 import TextInput from '@/Components/TextInput.vue'
-import { Link, useForm, usePage } from '@inertiajs/vue3'
+import { useForm, usePage } from '@inertiajs/vue3'
 
-const packages_remaining = usePage().props.packages_remaining
+const packagesRemaining = usePage().props.packagesRemaining
 
 const form = useForm({
-    packages_remaining: packages_remaining,
+    packagesRemaining: packagesRemaining,
 })
-console.log(form.packages_remaining)
 </script>
 
 <template>
@@ -27,7 +24,7 @@ console.log(form.packages_remaining)
 
         <form class="mt-6 space-y-6">
             <div>
-                <InputLabel for="packages_remaining" />
+                <InputLabel for="packagesRemaining" />
 
                 <TextInput
                     id="name"
@@ -35,7 +32,7 @@ console.log(form.packages_remaining)
                     class="mt-1 block"
                     readonly
                     autofocus
-                    v-model="form.packages_remaining"
+                    v-model="form.packagesRemaining"
                 />
             </div>
         </form>
