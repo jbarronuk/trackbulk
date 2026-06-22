@@ -30,9 +30,8 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            // Synchronously...
             'appName' => config('app.name'),
-            'stripePortal' => config('cashier.stripe_portal'),
+            'stripePortal' => config('subscriptions.stripe_portal'),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'failure' => fn () => $request->session()->get('failure'),

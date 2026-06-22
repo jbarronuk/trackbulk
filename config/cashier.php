@@ -122,8 +122,4 @@ return [
 
     'logger' => env('CASHIER_LOGGER'),
 
-    /**
-     * Custom
-     */
-    'stripe_portal' => env('STRIPE_PORTAL'),
 ];

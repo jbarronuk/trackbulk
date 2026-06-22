@@ -2,34 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 
 class SiteController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         return Inertia::render('Welcome', $this->commonProps());
     }
 
-    public function plans()
+    public function plans(): Response
     {
         return Inertia::render(
             Auth::check() ? 'AuthPlans' : 'Plans',
-            $this->commonProps(),
+            $this->commonProps() + ['stripe_prices' => config('subscriptions.stripe_prices')]
         );
     }
 
-    public function contact()
+    public function contact(): Response
     {
         return Inertia::render('Contact');
     }
 
-    public function submitContactForm(Request $request)
+    public function submitContactForm(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
